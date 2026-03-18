@@ -185,12 +185,7 @@ const ANOMALY_DEFINITIONS: AnomalyDefinition[] = [
       if (footer) footer.innerHTML = "&copy; 44444444 株式会社ノーマル All Rights Reserved.";
     },
   },
-  { name: "missing-service", displayName: "サービスカードが1枚少ない", difficulty: "hard", targetIndex: 4,
-    mutate: (el: HTMLElement) => {
-      const cards = el.querySelectorAll(".service-card");
-      if (cards[2]) cards[2].remove();
-    },
-  },
+  { name: "small-service", displayName: "サービスカードが少し小さい", difficulty: "hard", targetIndex: 4, className: "anomaly-small-cards" },
   { name: "logo-typo", displayName: "ロゴのタイポ「ノーマレーシア」", difficulty: "hard", targetIndex: 1,
     mutate: (el: HTMLElement) => {
       const logo = el.querySelector(".logo-text");

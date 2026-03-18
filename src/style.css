@@ -515,6 +515,11 @@ body {
   line-height: 1.1;
 }
 
+/* --- Hard: サービスカードが少し小さい --- */
+.anomaly-small-cards .service-card {
+  transform: scale(0.88);
+}
+
 /* --- Easy: 血飛沫 --- */
 .blood-overlay {
   position: fixed;
