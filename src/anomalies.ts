@@ -1,6 +1,6 @@
 /**
  * 異変（アノマリー）の定義と適用
- * sectionIndex: 0=nav, 1=hero, 2=about, 3=services, 4=stats, 5=team, 6=news, 7=cta, 8=footer
+ * sectionIndex: 0=spacer, 1=nav, 2=hero, 3=about, 4=services, 5=stats, 6=team, 7=news, 8=cta, 9=footer, 10=spacer
  */
 
 export interface AnomalyDefinition {
@@ -68,27 +68,27 @@ function createPowerOutageOverlay(): HTMLElement {
 
 const ANOMALY_DEFINITIONS: AnomalyDefinition[] = [
   // ===== 分かりやすい異変 (20) =====
-  { name: "glitch-hero", displayName: "ヒーローのグリッチ", difficulty: "easy", targetIndex: 1, className: "anomaly-glitch" },
-  { name: "invert-about", displayName: "会社概要の色反転", difficulty: "easy", targetIndex: 2, className: "anomaly-invert" },
-  { name: "upsidedown-services", displayName: "事業内容タイトルが逆さま", difficulty: "easy", targetIndex: 3, className: "anomaly-upsidedown" },
-  { name: "blink-stats", displayName: "実績セクションの赤い点滅", difficulty: "easy", targetIndex: 4, className: "anomaly-blink" },
-  { name: "zalgo-news", displayName: "お知らせがComic Sans", difficulty: "easy", targetIndex: 6, className: "anomaly-zalgo" },
-  { name: "tilt-section", displayName: "セクションの傾き", difficulty: "easy", targetIndex: 2, className: "anomaly-tilt" },
-  { name: "creepy-bg-team", displayName: "チームの暗赤色背景", difficulty: "easy", targetIndex: 5, className: "anomaly-creepy-bg" },
-  { name: "shake-cta", displayName: "CTAセクションの振動", difficulty: "easy", targetIndex: 7, className: "anomaly-shake" },
-  { name: "broken-nav", displayName: "ナビゲーション崩壊", difficulty: "easy", targetIndex: 0, className: "anomaly-broken-nav" },
-  { name: "corrupt-stats", displayName: "数値のバグ", difficulty: "easy", targetIndex: 4, className: "anomaly-corrupt-stats",
+  { name: "glitch-hero", displayName: "ヒーローのグリッチ", difficulty: "easy", targetIndex: 2, className: "anomaly-glitch" },
+  { name: "invert-about", displayName: "会社概要の色反転", difficulty: "easy", targetIndex: 3, className: "anomaly-invert" },
+  { name: "upsidedown-services", displayName: "事業内容タイトルが逆さま", difficulty: "easy", targetIndex: 4, className: "anomaly-upsidedown" },
+  { name: "blink-stats", displayName: "実績セクションの赤い点滅", difficulty: "easy", targetIndex: 5, className: "anomaly-blink" },
+  { name: "zalgo-news", displayName: "お知らせがComic Sans", difficulty: "easy", targetIndex: 7, className: "anomaly-zalgo" },
+  { name: "tilt-section", displayName: "セクションの傾き", difficulty: "easy", targetIndex: 3, className: "anomaly-tilt" },
+  { name: "creepy-bg-team", displayName: "チームの暗赤色背景", difficulty: "easy", targetIndex: 6, className: "anomaly-creepy-bg" },
+  { name: "shake-cta", displayName: "CTAセクションの振動", difficulty: "easy", targetIndex: 8, className: "anomaly-shake" },
+  { name: "broken-nav", displayName: "ナビゲーション崩壊", difficulty: "easy", targetIndex: 1, className: "anomaly-broken-nav" },
+  { name: "corrupt-stats", displayName: "数値のバグ", difficulty: "easy", targetIndex: 5, className: "anomaly-corrupt-stats",
     mutate: (el: HTMLElement) => {
       const nums = el.querySelectorAll(".stat-number");
       ["E̵R̶R̸", "NaN", "-∞", "0x6"].forEach((v, i) => { if (nums[i]) nums[i].textContent = v; });
     },
   },
-  { name: "creepy-team", displayName: "チームメンバーが「?」", difficulty: "easy", targetIndex: 5, className: "anomaly-creepy-team",
+  { name: "creepy-team", displayName: "チームメンバーが「?」", difficulty: "easy", targetIndex: 6, className: "anomaly-creepy-team",
     mutate: (el: HTMLElement) => { el.querySelectorAll(".team-avatar").forEach((a) => { a.textContent = "?"; }); },
   },
-  { name: "wild-cta", displayName: "CTAボタン暴走", difficulty: "easy", targetIndex: 7, className: "anomaly-wild-cta" },
-  { name: "mirror-hero", displayName: "ヒーローの左右反転", difficulty: "easy", targetIndex: 1, className: "anomaly-mirror" },
-  { name: "giant-title", displayName: "巨大タイトル", difficulty: "easy", targetIndex: 3, className: "anomaly-giant" },
+  { name: "wild-cta", displayName: "CTAボタン暴走", difficulty: "easy", targetIndex: 8, className: "anomaly-wild-cta" },
+  { name: "mirror-hero", displayName: "ヒーローの左右反転", difficulty: "easy", targetIndex: 2, className: "anomaly-mirror" },
+  { name: "giant-title", displayName: "巨大タイトル", difficulty: "easy", targetIndex: 4, className: "anomaly-giant" },
   { name: "blood-splatter", displayName: "画面の血飛沫", difficulty: "easy", createOverlay: createBloodOverlay },
   { name: "power-outage", displayName: "停電", difficulty: "easy",
     createOverlay: createPowerOutageOverlay,
@@ -130,26 +130,26 @@ const ANOMALY_DEFINITIONS: AnomalyDefinition[] = [
   { name: "static-noise", displayName: "画面ノイズ", difficulty: "easy", bodyClass: "anomaly-static" },
 
   // ===== 分かりづらい異変 (10) =====
-  { name: "nav-typo", displayName: "ナビのタイポ「地下労働」", difficulty: "hard", targetIndex: 0,
+  { name: "nav-typo", displayName: "ナビのタイポ「地下労働」", difficulty: "hard", targetIndex: 1,
     mutate: (el: HTMLElement) => {
       const items = el.querySelectorAll(".nav-links li");
       items.forEach((li) => { if (li.textContent === "事業内容") li.textContent = "地下労働"; });
     },
   },
-  { name: "stat-off", displayName: "数値が微妙に違う", difficulty: "hard", targetIndex: 4,
+  { name: "stat-off", displayName: "数値が微妙に違う", difficulty: "hard", targetIndex: 5,
     mutate: (el: HTMLElement) => {
       const nums = el.querySelectorAll(".stat-number");
       if (nums[0]) nums[0].textContent = "150000+";
     },
   },
-  { name: "team-role-swap", displayName: "メンバーの役職が異世界", difficulty: "hard", targetIndex: 5,
+  { name: "team-role-swap", displayName: "メンバーの役職が異世界", difficulty: "hard", targetIndex: 6,
     mutate: (el: HTMLElement) => {
       const roles = el.querySelectorAll(".team-member p");
       const fantasyRoles = ["勇者", "魔法使い", "騎士"];
       roles.forEach((p, i) => { if (fantasyRoles[i]) p.textContent = fantasyRoles[i]; });
     },
   },
-  { name: "extra-news", displayName: "ニュースが大量に増えている", difficulty: "hard", targetIndex: 6,
+  { name: "extra-news", displayName: "ニュースが大量に増えている", difficulty: "hard", targetIndex: 7,
     mutate: (el: HTMLElement) => {
       const inner = el.querySelectorAll(".section-inner")[4];
       if (!inner) return;
@@ -173,25 +173,25 @@ const ANOMALY_DEFINITIONS: AnomalyDefinition[] = [
       }
     },
   },
-  { name: "wrong-year", displayName: "フッターの年号が違う", difficulty: "hard", targetIndex: 8,
+  { name: "wrong-year", displayName: "フッターの年号が違う", difficulty: "hard", targetIndex: 9,
     mutate: (el: HTMLElement) => {
       const footer = el.querySelector(".corp-footer");
       if (footer) footer.innerHTML = "&copy; 44444444 株式会社ノーマル All Rights Reserved.";
     },
   },
-  { name: "missing-service", displayName: "サービスカードが1枚少ない", difficulty: "hard", targetIndex: 3,
+  { name: "missing-service", displayName: "サービスカードが1枚少ない", difficulty: "hard", targetIndex: 4,
     mutate: (el: HTMLElement) => {
       const cards = el.querySelectorAll(".service-card");
       if (cards[2]) cards[2].remove();
     },
   },
-  { name: "logo-typo", displayName: "ロゴのタイポ「ノーマレーシア」", difficulty: "hard", targetIndex: 0,
+  { name: "logo-typo", displayName: "ロゴのタイポ「ノーマレーシア」", difficulty: "hard", targetIndex: 1,
     mutate: (el: HTMLElement) => {
       const logo = el.querySelector(".logo-text");
       if (logo) logo.textContent = "株式会社ノーマレーシア";
     },
   },
-  { name: "extra-nav", displayName: "ナビ項目が3つ多い", difficulty: "hard", targetIndex: 0,
+  { name: "extra-nav", displayName: "ナビ項目が3つ多い", difficulty: "hard", targetIndex: 1,
     mutate: (el: HTMLElement) => {
       const navLinks = el.querySelector(".nav-links");
       if (!navLinks) return;
@@ -202,15 +202,15 @@ const ANOMALY_DEFINITIONS: AnomalyDefinition[] = [
       }
     },
   },
-  { name: "cta-typo", displayName: "CTAテキストが豹変", difficulty: "hard", targetIndex: 7,
+  { name: "cta-typo", displayName: "CTAテキストが豹変", difficulty: "hard", targetIndex: 8,
     mutate: (el: HTMLElement) => {
       const h3 = el.querySelector(".cta-box h3");
       if (h3) h3.textContent = "もう二度と相談してくるな。ぶち殺すぞ。";
     },
   },
-  { name: "news-future-date", displayName: "ニュースの日付が未来", difficulty: "hard", targetIndex: 6,
+  { name: "news-future-date", displayName: "ニュースの日付が未来", difficulty: "hard", targetIndex: 7,
     mutate: (el: HTMLElement) => {
-      const texts = el.querySelectorAll(".corp-section:nth-child(7) .section-text");
+      const texts = el.querySelectorAll(".corp-section:nth-child(8) .section-text");
       if (texts[0]) texts[0].textContent = "37564.03.01 — 新オフィスを東京・渋谷に移転しました。";
     },
   },

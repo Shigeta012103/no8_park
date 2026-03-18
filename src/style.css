@@ -212,6 +212,10 @@ body {
   margin: 0 auto;
 }
 
+.loop-spacer {
+  height: 50vh;
+}
+
 /* ===== Corporate Sections ===== */
 .corp-section {
   padding: 80px 32px;

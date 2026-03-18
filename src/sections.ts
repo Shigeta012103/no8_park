@@ -175,7 +175,9 @@ export function renderFooter(): string {
 
 /** 1ループ分の全セクションHTMLを返す */
 export function renderLoop(): string {
+  const SPACER = '<div class="loop-spacer"></div>';
   return [
+    SPACER,
     renderNav(),
     renderHero(),
     renderAbout(),
@@ -185,5 +187,6 @@ export function renderLoop(): string {
     renderNews(),
     renderCta(),
     renderFooter(),
+    SPACER,
   ].join("");
 }
