@@ -145,7 +145,7 @@ const ANOMALY_DEFINITIONS: AnomalyDefinition[] = [
   { name: "stat-off", displayName: "数値が微妙に違う", difficulty: "hard", targetIndex: 5,
     mutate: (el: HTMLElement) => {
       const nums = el.querySelectorAll(".stat-number");
-      if (nums[0]) nums[0].textContent = "150000+";
+      if (nums[0]) nums[0].textContent = "1500+";
     },
   },
   { name: "team-role-swap", displayName: "メンバーの役職が異世界", difficulty: "hard", targetIndex: 6,
