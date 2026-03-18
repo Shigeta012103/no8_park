@@ -5,7 +5,6 @@ import {
   resetUsedAnomalies,
   resetEncountered,
   getEncounteredAnomalies,
-  getUnseenCount,
   getAllAnomalies,
   getActiveScrollTrigger,
   type AnomalyDefinition,
@@ -27,7 +26,6 @@ interface GameState {
   maxScrollY: number;
   messageTimer: ReturnType<typeof setTimeout> | null;
   anomalyCleanup: (() => void) | null;
-  lastAnomalyName: string | null;
 }
 
 function createInitialState(): GameState {
@@ -41,7 +39,6 @@ function createInitialState(): GameState {
     maxScrollY: 0,
     messageTimer: null,
     anomalyCleanup: null,
-    lastAnomalyName: null,
   };
 }
 
@@ -52,8 +49,6 @@ let messageEl: HTMLElement;
 let overlayEl: HTMLElement;
 let overlayContentEl: HTMLElement;
 let flashEl: HTMLElement;
-let lastAnomalyEl: HTMLElement;
-let unseenCountEl: HTMLElement;
 let fixedLinkEl: HTMLAnchorElement;
 
 export function initGame(): void {
@@ -62,8 +57,6 @@ export function initGame(): void {
   messageEl = document.getElementById("message")!;
   overlayEl = document.getElementById("overlay")!;
   overlayContentEl = document.getElementById("overlay-content")!;
-  lastAnomalyEl = document.getElementById("last-anomaly")!;
-  unseenCountEl = document.getElementById("unseen-count")!;
   fixedLinkEl = document.getElementById("fixed-link") as HTMLAnchorElement;
 
   fixedLinkEl.addEventListener("click", (e) => e.preventDefault());
@@ -133,7 +126,7 @@ function setupLoop(): void {
     const anomaly = pickRandomAnomaly();
     state.currentAnomaly = anomaly;
     state.anomalyCleanup = applyAnomaly(loopWrapper, anomaly);
-    state.lastAnomalyName = anomaly.displayName;
+
   }
 
   updateHud();
@@ -232,8 +225,6 @@ function showMessage(text: string): void {
 
 function updateHud(): void {
   progressEl.textContent = `${state.correctCount} / ${CLEAR_COUNT}`;
-  lastAnomalyEl.textContent = `最後の異変: ${state.lastAnomalyName ?? "―"}`;
-  unseenCountEl.textContent = `未遭遇: ${getUnseenCount()}`;
 }
 
 function showClearScreen(): void {
@@ -247,7 +238,7 @@ function showClearScreen(): void {
     <div class="clear-screen">
       <h2>おめでとうございます！</h2>
       <p>8番出口に到達しました。<br>あなたは異変を見抜く達人です。</p>
-      <p class="encounter-stat">遭遇した異変: ${encountered.size} / ${all.length}</p>
+      <p class="encounter-stat">遭遇した異変: ${encountered.size} / ${all.length}（未遭遇: ${all.length - encountered.size}）</p>
       <div class="clear-buttons">
         <button type="button" id="show-list-button">異変一覧を見る</button>
         <button type="button" id="restart-button">もう一度遊ぶ</button>
