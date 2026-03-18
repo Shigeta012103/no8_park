@@ -68,13 +68,20 @@ function createPowerOutageOverlay(): HTMLElement {
 
 const ANOMALY_DEFINITIONS: AnomalyDefinition[] = [
   // ===== 分かりやすい異変 (20) =====
-  { name: "glitch-hero", displayName: "ヒーローのグリッチ", difficulty: "easy", targetIndex: 2, className: "anomaly-glitch" },
+  { name: "glitch-hero", displayName: "ヒーローの微振動", difficulty: "easy", targetIndex: 2, className: "anomaly-glitch" },
   { name: "invert-about", displayName: "会社概要の色反転", difficulty: "easy", targetIndex: 3, className: "anomaly-invert" },
-  { name: "upsidedown-services", displayName: "事業内容タイトルが逆さま", difficulty: "easy", targetIndex: 4, className: "anomaly-upsidedown" },
+  { name: "upsidedown-services", displayName: "事業内容タイトルの1文字反転", difficulty: "easy", targetIndex: 4,
+    mutate: (el: HTMLElement) => {
+      const title = el.querySelectorAll(".section-title")[2];
+      if (!title || !title.textContent) return;
+      const text = title.textContent;
+      title.innerHTML = text[0] + `<span style="display:inline-block;transform:rotate(180deg)">${text[1]}</span>` + text.slice(2);
+    },
+  },
   { name: "blink-stats", displayName: "実績セクションの赤い点滅", difficulty: "easy", targetIndex: 5, className: "anomaly-blink" },
   { name: "zalgo-news", displayName: "お知らせがComic Sans", difficulty: "easy", targetIndex: 7, className: "anomaly-zalgo" },
   { name: "tilt-section", displayName: "セクションの傾き", difficulty: "easy", targetIndex: 3, className: "anomaly-tilt" },
-  { name: "creepy-bg-team", displayName: "チームの暗赤色背景", difficulty: "easy", targetIndex: 6, className: "anomaly-creepy-bg" },
+  { name: "creepy-bg-team", displayName: "チームセクションがフェードアウト", difficulty: "easy", targetIndex: 6, className: "anomaly-fadeout" },
   { name: "shake-cta", displayName: "CTAセクションの振動", difficulty: "easy", targetIndex: 8, className: "anomaly-shake" },
   { name: "broken-nav", displayName: "ナビゲーション崩壊", difficulty: "easy", targetIndex: 1, className: "anomaly-broken-nav" },
   { name: "corrupt-stats", displayName: "数値のバグ", difficulty: "easy", targetIndex: 5, className: "anomaly-corrupt-stats",
@@ -83,10 +90,10 @@ const ANOMALY_DEFINITIONS: AnomalyDefinition[] = [
       ["E̵R̶R̸", "NaN", "-∞", "0x6"].forEach((v, i) => { if (nums[i]) nums[i].textContent = v; });
     },
   },
-  { name: "creepy-team", displayName: "チームメンバーが「?」", difficulty: "easy", targetIndex: 6, className: "anomaly-creepy-team",
+  { name: "creepy-team", displayName: "チームメンバーが「?」", difficulty: "easy", targetIndex: 6,
     mutate: (el: HTMLElement) => { el.querySelectorAll(".team-avatar").forEach((a) => { a.textContent = "?"; }); },
   },
-  { name: "wild-cta", displayName: "CTAボタン暴走", difficulty: "easy", targetIndex: 8, className: "anomaly-wild-cta" },
+  { name: "wild-cta", displayName: "CTAボタンが膨張", difficulty: "easy", targetIndex: 8, className: "anomaly-wild-cta" },
   { name: "mirror-hero", displayName: "ヒーローの左右反転", difficulty: "easy", targetIndex: 2, className: "anomaly-mirror" },
   { name: "giant-title", displayName: "巨大タイトル", difficulty: "easy", targetIndex: 4, className: "anomaly-giant" },
   { name: "blood-splatter", displayName: "画面の血飛沫", difficulty: "easy", createOverlay: createBloodOverlay },
@@ -118,12 +125,11 @@ const ANOMALY_DEFINITIONS: AnomalyDefinition[] = [
       deactivate: () => { document.querySelector(".fake-clear-overlay")?.classList.remove("active"); },
     },
   },
-  { name: "fixed-link-red", displayName: "固定ボタンが赤く変異", difficulty: "easy",
+  { name: "fixed-link-red", displayName: "固定ボタンの文言変化", difficulty: "easy",
     mutate: () => {
       const btn = document.getElementById("fixed-link");
       if (btn) {
         btn.textContent = "助けて";
-        btn.classList.add("fixed-link-anomaly");
       }
     },
   },

@@ -89,15 +89,6 @@ body {
   transform: translateY(-2px);
 }
 
-#fixed-link.fixed-link-anomaly {
-  background: #ff0040;
-  animation: pulse-link 0.6s infinite;
-}
-
-@keyframes pulse-link {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.15); }
-}
 
 /* ===== Overlay ===== */
 #overlay {
@@ -423,25 +414,21 @@ body {
    Anomaly Styles
    ======================================== */
 
-/* --- Easy: グリッチ --- */
+/* --- Easy: 微振動 --- */
 .anomaly-glitch .section-title {
-  animation: glitch 0.3s infinite;
-  color: #ff0040;
+  animation: glitch 2s infinite;
 }
 @keyframes glitch {
-  0% { transform: translate(0); }
-  20% { transform: translate(-3px, 3px); }
-  40% { transform: translate(3px, -3px); }
-  60% { transform: translate(-2px, -2px); }
-  80% { transform: translate(2px, 2px); }
-  100% { transform: translate(0); }
+  0%, 90%, 100% { transform: translate(0); }
+  92% { transform: translate(-1px, 1px); }
+  94% { transform: translate(1px, -1px); }
+  96% { transform: translate(-1px, 0); }
+  98% { transform: translate(1px, 0); }
 }
 
 /* --- Easy: 色反転 --- */
 .anomaly-invert { filter: invert(1) hue-rotate(180deg); }
 
-/* --- Easy: 逆さま --- */
-.anomaly-upsidedown .section-title { transform: rotate(180deg); }
 
 /* --- Easy: 赤い点滅 --- */
 .anomaly-blink { animation: blink-border 0.5s infinite; }
@@ -455,29 +442,36 @@ body {
   font-family: "Comic Sans MS", cursive;
   letter-spacing: 5px;
   word-spacing: 10px;
-  color: #8b00ff;
+  color: #000;
 }
 
-/* --- Easy: 傾き --- */
+/* --- Easy: ゆっくり傾く --- */
 .anomaly-tilt {
-  transform: rotate(-3deg) scale(1.02);
+  animation: slow-tilt 8s ease-in-out forwards;
   transform-origin: center;
 }
+@keyframes slow-tilt {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(-5deg) scale(1.02); }
+}
 
-/* --- Easy: 暗赤色背景 --- */
-.anomaly-creepy-bg { background: #1a0a0a !important; color: #cc0000; }
-.anomaly-creepy-bg .section-title,
-.anomaly-creepy-bg .section-label,
-.anomaly-creepy-bg .section-text { color: #cc0000; }
+/* --- Easy: フェードアウト --- */
+.anomaly-fadeout {
+  animation: fadeout 6s ease-in forwards;
+}
+@keyframes fadeout {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
 
-/* --- Easy: 震え --- */
-.anomaly-shake { animation: shake 0.1s infinite; }
+/* --- Easy: 微かな震え --- */
+.anomaly-shake { animation: shake 3s infinite; }
 @keyframes shake {
-  0% { transform: translate(0, 0); }
-  25% { transform: translate(2px, -2px); }
-  50% { transform: translate(-2px, 2px); }
-  75% { transform: translate(2px, 2px); }
-  100% { transform: translate(-2px, -2px); }
+  0%, 85%, 100% { transform: translate(0, 0); }
+  87% { transform: translate(0.5px, -0.5px); }
+  89% { transform: translate(-0.5px, 0.5px); }
+  91% { transform: translate(0.5px, 0); }
+  93% { transform: translate(-0.5px, 0); }
 }
 
 /* --- Easy: ナビ崩壊 --- */
@@ -501,27 +495,15 @@ body {
   100% { opacity: 0.8; transform: skewX(0deg); }
 }
 
-/* --- Easy: チーム「?」 --- */
-.anomaly-creepy-team .team-avatar {
-  background: #ff0040;
-  animation: pulse-creepy 1s infinite;
-}
-@keyframes pulse-creepy {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.2); }
-}
+/* --- Easy: チーム「?」（アバターの見た目は変えない、mutateで文字だけ変更） --- */
 
-/* --- Easy: CTAボタン暴走 --- */
+/* --- Easy: CTAボタンがゆっくり膨張 --- */
 .anomaly-wild-cta .cta-button {
-  animation: wild 0.3s infinite;
-  background: #ff0040;
+  animation: grow 8s ease-in forwards;
 }
-@keyframes wild {
-  0% { transform: translate(0, 0) rotate(0deg); }
-  25% { transform: translate(10px, -5px) rotate(5deg); }
-  50% { transform: translate(-10px, 5px) rotate(-5deg); }
-  75% { transform: translate(5px, 10px) rotate(3deg); }
-  100% { transform: translate(0, 0) rotate(0deg); }
+@keyframes grow {
+  0% { transform: scale(1); }
+  100% { transform: scale(2.5); }
 }
 
 /* --- Easy: 左右反転 --- */

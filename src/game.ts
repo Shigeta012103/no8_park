@@ -107,7 +107,6 @@ function cleanupCurrentAnomaly(): void {
 
 function resetFixedLink(): void {
   fixedLinkEl.textContent = "お問い合わせ →";
-  fixedLinkEl.classList.remove("fixed-link-anomaly");
 }
 
 function setupLoop(): void {
