@@ -69,7 +69,12 @@ function createPowerOutageOverlay(): HTMLElement {
 const ANOMALY_DEFINITIONS: AnomalyDefinition[] = [
   // ===== 分かりやすい異変 (20) =====
   { name: "glitch-hero", displayName: "ヒーローの微振動", difficulty: "easy", targetIndex: 2, className: "anomaly-glitch" },
-  { name: "invert-about", displayName: "会社概要の色反転", difficulty: "easy", targetIndex: 3, className: "anomaly-invert" },
+  { name: "invert-about", displayName: "会死概要", difficulty: "easy", targetIndex: 3,
+    mutate: (el: HTMLElement) => {
+      const title = el.querySelectorAll(".section-title")[1];
+      if (title) title.textContent = "会死概要";
+    },
+  },
   { name: "upsidedown-services", displayName: "事業内容タイトルの1文字反転", difficulty: "easy", targetIndex: 4,
     mutate: (el: HTMLElement) => {
       const title = el.querySelectorAll(".section-title")[2];
@@ -78,16 +83,37 @@ const ANOMALY_DEFINITIONS: AnomalyDefinition[] = [
       title.innerHTML = text[0] + `<span style="display:inline-block;transform:rotate(180deg)">${text[1]}</span>` + text.slice(2);
     },
   },
-  { name: "blink-stats", displayName: "実績セクションの赤い点滅", difficulty: "easy", targetIndex: 5, className: "anomaly-blink" },
+  { name: "funeral-services", displayName: "事業内容が葬式", difficulty: "easy", targetIndex: 4,
+    mutate: (el: HTMLElement) => {
+      const title = el.querySelectorAll(".section-title")[2];
+      if (title) title.textContent = "葬式内容";
+      const cards = el.querySelectorAll(".service-card");
+      const funerals = [
+        { icon: "&#9764;", name: "お通夜プラン", desc: "故人を偲ぶ厳かなお通夜の企画・運営" },
+        { icon: "&#9876;", name: "告別式コーディネート", desc: "心に残る告別式を一から丁寧にサポート" },
+        { icon: "&#9935;", name: "納骨・法要手配", desc: "納骨から各種法要まで一括でお任せください" },
+      ];
+      cards.forEach((card, i) => {
+        if (!funerals[i]) return;
+        const icon = card.querySelector(".service-icon");
+        const h3 = card.querySelector("h3");
+        const p = card.querySelector("p");
+        if (icon) icon.innerHTML = funerals[i].icon;
+        if (h3) h3.textContent = funerals[i].name;
+        if (p) p.textContent = funerals[i].desc;
+      });
+    },
+  },
   { name: "zalgo-news", displayName: "お知らせがComic Sans", difficulty: "easy", targetIndex: 7, className: "anomaly-zalgo" },
   { name: "tilt-section", displayName: "セクションの傾き", difficulty: "easy", targetIndex: 3, className: "anomaly-tilt" },
   { name: "creepy-bg-team", displayName: "チームセクションがフェードアウト", difficulty: "easy", targetIndex: 6, className: "anomaly-fadeout" },
   { name: "shake-cta", displayName: "CTAセクションの振動", difficulty: "easy", targetIndex: 8, className: "anomaly-shake" },
   { name: "broken-nav", displayName: "ナビゲーション崩壊", difficulty: "easy", targetIndex: 1, className: "anomaly-broken-nav" },
-  { name: "corrupt-stats", displayName: "数値のバグ", difficulty: "easy", targetIndex: 5, className: "anomaly-corrupt-stats",
+  { name: "corrupt-stats", displayName: "数値ラベルが不穏", difficulty: "easy", targetIndex: 5,
     mutate: (el: HTMLElement) => {
-      const nums = el.querySelectorAll(".stat-number");
-      ["E̵R̶R̸", "NaN", "-∞", "0x6"].forEach((v, i) => { if (nums[i]) nums[i].textContent = v; });
+      const labels = el.querySelectorAll(".stat-label");
+      const creepyLabels = ["殺した人数", "不快度", "今後殺す予定の人数", "右手の在庫数"];
+      labels.forEach((label, i) => { if (creepyLabels[i]) label.textContent = creepyLabels[i]; });
     },
   },
   { name: "creepy-team", displayName: "チームメンバーが「?」", difficulty: "easy", targetIndex: 6,
@@ -155,21 +181,13 @@ const ANOMALY_DEFINITIONS: AnomalyDefinition[] = [
       roles.forEach((p, i) => { if (fantasyRoles[i]) p.textContent = fantasyRoles[i]; });
     },
   },
-  { name: "extra-news", displayName: "ニュースが大量に増えている", difficulty: "hard", targetIndex: 7,
+  { name: "extra-news", displayName: "ニュースが2件多い", difficulty: "hard", targetIndex: 7,
     mutate: (el: HTMLElement) => {
       const inner = el.querySelectorAll(".section-inner")[4];
       if (!inner) return;
       const extras = [
         "2024.12.20 — 社内ハッカソンを開催しました。",
         "2024.11.05 — 第3回AIカンファレンスに登壇しました。",
-        "2024.10.18 — 新卒採用を開始しました。",
-        "2024.09.01 — セキュリティ認証ISO27001を取得しました。",
-        "2024.08.15 — 夏季休暇のお知らせ。",
-        "2024.07.22 — パートナー企業と業務提携を締結しました。",
-        "2024.06.10 — 社内勉強会レポートを公開しました。",
-        "2024.05.01 — GW休業のお知らせ。",
-        "2024.04.15 — オフィス増床のお知らせ。",
-        "2024.03.20 — 年度末決算報告を公開しました。",
       ];
       for (const text of extras) {
         const p = document.createElement("p");
