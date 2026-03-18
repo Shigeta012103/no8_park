@@ -1,9 +1,18 @@
 import { renderLoop } from "./sections";
-import { applyAnomaly, pickRandomAnomaly, resetUsedAnomalies } from "./anomalies";
+import {
+  applyAnomaly,
+  pickRandomAnomaly,
+  resetUsedAnomalies,
+  resetEncountered,
+  getEncounteredAnomalies,
+  getUnseenCount,
+  getAllAnomalies,
+  getActiveScrollTrigger,
+  type AnomalyDefinition,
+} from "./anomalies";
 
 const CLEAR_COUNT = 8;
 const ANOMALY_PROBABILITY = 0.5;
-/** 「引き返す」判定に必要な最低スクロール量(px) */
 const MIN_SCROLL_BEFORE_RETURN = 100;
 const MESSAGE_DISPLAY_MS = 1500;
 const FLASH_DURATION_MS = 300;
@@ -11,29 +20,41 @@ const FLASH_DURATION_MS = 300;
 interface GameState {
   correctCount: number;
   currentHasAnomaly: boolean;
+  currentAnomaly: AnomalyDefinition | null;
   isTransitioning: boolean;
   lastScrollY: number;
   loopStartY: number;
   maxScrollY: number;
   messageTimer: ReturnType<typeof setTimeout> | null;
+  anomalyCleanup: (() => void) | null;
+  lastAnomalyName: string | null;
 }
 
-let state: GameState = {
-  correctCount: 0,
-  currentHasAnomaly: false,
-  isTransitioning: false,
-  lastScrollY: 0,
-  loopStartY: 0,
-  maxScrollY: 0,
-  messageTimer: null,
-};
+function createInitialState(): GameState {
+  return {
+    correctCount: 0,
+    currentHasAnomaly: false,
+    currentAnomaly: null,
+    isTransitioning: false,
+    lastScrollY: 0,
+    loopStartY: 0,
+    maxScrollY: 0,
+    messageTimer: null,
+    anomalyCleanup: null,
+    lastAnomalyName: null,
+  };
+}
 
+let state: GameState = createInitialState();
 let corridorEl: HTMLElement;
 let progressEl: HTMLElement;
 let messageEl: HTMLElement;
 let overlayEl: HTMLElement;
 let overlayContentEl: HTMLElement;
 let flashEl: HTMLElement;
+let lastAnomalyEl: HTMLElement;
+let unseenCountEl: HTMLElement;
+let fixedLinkEl: HTMLAnchorElement;
 
 export function initGame(): void {
   corridorEl = document.getElementById("corridor")!;
@@ -41,6 +62,11 @@ export function initGame(): void {
   messageEl = document.getElementById("message")!;
   overlayEl = document.getElementById("overlay")!;
   overlayContentEl = document.getElementById("overlay-content")!;
+  lastAnomalyEl = document.getElementById("last-anomaly")!;
+  unseenCountEl = document.getElementById("unseen-count")!;
+  fixedLinkEl = document.getElementById("fixed-link") as HTMLAnchorElement;
+
+  fixedLinkEl.addEventListener("click", (e) => e.preventDefault());
 
   flashEl = document.createElement("div");
   flashEl.className = "flash-overlay";
@@ -64,29 +90,35 @@ function showStartScreen(): void {
     </div>
   `;
   overlayEl.classList.remove("hidden");
-
   document.getElementById("start-button")!.addEventListener("click", startGame);
 }
 
 function startGame(): void {
-  state = {
-    correctCount: 0,
-    currentHasAnomaly: false,
-    isTransitioning: false,
-    lastScrollY: 0,
-    loopStartY: 0,
-    maxScrollY: 0,
-    messageTimer: null,
-  };
+  state = createInitialState();
   resetUsedAnomalies();
-  updateProgress();
+  resetEncountered();
+  updateHud();
   overlayEl.classList.add("hidden");
-
   setupLoop();
   window.addEventListener("scroll", handleScroll, { passive: true });
 }
 
+function cleanupCurrentAnomaly(): void {
+  if (state.anomalyCleanup) {
+    state.anomalyCleanup();
+    state.anomalyCleanup = null;
+  }
+  resetFixedLink();
+  document.body.classList.remove("anomaly-static");
+}
+
+function resetFixedLink(): void {
+  fixedLinkEl.textContent = "お問い合わせ →";
+  fixedLinkEl.classList.remove("fixed-link-anomaly");
+}
+
 function setupLoop(): void {
+  cleanupCurrentAnomaly();
   corridorEl.innerHTML = "";
 
   const loopWrapper = document.createElement("div");
@@ -95,12 +127,16 @@ function setupLoop(): void {
   corridorEl.appendChild(loopWrapper);
 
   state.currentHasAnomaly = Math.random() < ANOMALY_PROBABILITY;
+  state.currentAnomaly = null;
 
   if (state.currentHasAnomaly) {
     const anomaly = pickRandomAnomaly();
-    applyAnomaly(loopWrapper, anomaly);
+    state.currentAnomaly = anomaly;
+    state.anomalyCleanup = applyAnomaly(loopWrapper, anomaly);
+    state.lastAnomalyName = anomaly.displayName;
   }
 
+  updateHud();
   window.scrollTo(0, 0);
   state.lastScrollY = 0;
   state.loopStartY = 0;
@@ -120,15 +156,25 @@ function handleScroll(): void {
 
   const loopHeight = loopWrapper.offsetHeight;
   const scrolledInLoop = currentY - state.loopStartY;
+  const scrollRatio = scrolledInLoop / loopHeight;
   const hasSeenEnough = state.maxScrollY >= MIN_SCROLL_BEFORE_RETURN;
 
-  // 下にスクロールしてループの終端に到達 → 「進む」判定
+  if (state.currentAnomaly) {
+    const trigger = getActiveScrollTrigger(state.currentAnomaly);
+    if (trigger) {
+      if (scrollRatio >= trigger.ratio) {
+        trigger.activate();
+      } else {
+        trigger.deactivate();
+      }
+    }
+  }
+
   if (scrolledInLoop >= loopHeight - window.innerHeight - 1) {
     handleJudgment("down");
     return;
   }
 
-  // 十分下まで見てからトップ付近まで戻った → 「引き返す」判定
   if (hasSeenEnough && currentY <= state.loopStartY) {
     handleJudgment("up");
     return;
@@ -146,17 +192,16 @@ function handleJudgment(direction: "up" | "down"): void {
 
   if (isCorrect) {
     state.correctCount++;
-    updateProgress();
+    updateHud();
 
     if (state.correctCount >= CLEAR_COUNT) {
       showClearScreen();
       return;
     }
-
     showMessage("正解！ 先に進めます...");
   } else {
     state.correctCount = 0;
-    updateProgress();
+    updateHud();
     showMessage("不正解... 最初からやり直し");
   }
 
@@ -179,34 +224,77 @@ function flashTransition(callback: () => void): void {
 function showMessage(text: string): void {
   messageEl.textContent = text;
   messageEl.classList.add("show");
-
-  if (state.messageTimer) {
-    clearTimeout(state.messageTimer);
-  }
-
+  if (state.messageTimer) clearTimeout(state.messageTimer);
   state.messageTimer = setTimeout(() => {
     messageEl.classList.remove("show");
   }, MESSAGE_DISPLAY_MS);
 }
 
-function updateProgress(): void {
+function updateHud(): void {
   progressEl.textContent = `${state.correctCount} / ${CLEAR_COUNT}`;
+  lastAnomalyEl.textContent = `最後の異変: ${state.lastAnomalyName ?? "―"}`;
+  unseenCountEl.textContent = `未遭遇: ${getUnseenCount()}`;
 }
 
 function showClearScreen(): void {
   window.removeEventListener("scroll", handleScroll);
+  cleanupCurrentAnomaly();
+
+  const encountered = getEncounteredAnomalies();
+  const all = getAllAnomalies();
 
   overlayContentEl.innerHTML = `
     <div class="clear-screen">
       <h2>おめでとうございます！</h2>
       <p>8番出口に到達しました。<br>あなたは異変を見抜く達人です。</p>
-      <button type="button" id="restart-button">もう一度遊ぶ</button>
+      <p class="encounter-stat">遭遇した異変: ${encountered.size} / ${all.length}</p>
+      <div class="clear-buttons">
+        <button type="button" id="show-list-button">異変一覧を見る</button>
+        <button type="button" id="restart-button">もう一度遊ぶ</button>
+      </div>
     </div>
   `;
   overlayEl.classList.remove("hidden");
 
+  document.getElementById("show-list-button")!.addEventListener("click", () => {
+    showAnomalyList(encountered, all);
+  });
   document.getElementById("restart-button")!.addEventListener("click", () => {
     overlayEl.classList.add("hidden");
     startGame();
+  });
+}
+
+function showAnomalyList(
+  encountered: Map<string, string>,
+  all: Array<{ name: string; displayName: string; difficulty: string }>,
+): void {
+  const easyList = all.filter((a) => a.difficulty === "easy");
+  const hardList = all.filter((a) => a.difficulty === "hard");
+
+  const renderList = (items: typeof all): string =>
+    items
+      .map((a) => {
+        const found = encountered.has(a.name);
+        const icon = found ? "&#10003;" : "???";
+        const label = found ? a.displayName : "？？？";
+        const cls = found ? "found" : "not-found";
+        return `<li class="${cls}"><span class="check">${icon}</span> ${label}</li>`;
+      })
+      .join("");
+
+  overlayContentEl.innerHTML = `
+    <div class="anomaly-list-screen">
+      <h2>異変一覧</h2>
+      <h3>分かりやすい異変 (${easyList.filter((a) => encountered.has(a.name)).length}/${easyList.length})</h3>
+      <ul class="anomaly-list">${renderList(easyList)}</ul>
+      <h3>分かりづらい異変 (${hardList.filter((a) => encountered.has(a.name)).length}/${hardList.length})</h3>
+      <ul class="anomaly-list">${renderList(hardList)}</ul>
+      <button type="button" id="back-to-clear">戻る</button>
+    </div>
+  `;
+
+  document.getElementById("back-to-clear")!.addEventListener("click", () => {
+    showClearScreen();
   });
 }

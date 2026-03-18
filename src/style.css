@@ -21,9 +21,7 @@
   --font-sans: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
 }
 
-html {
-  scroll-behavior: auto;
-}
+html { scroll-behavior: auto; }
 
 body {
   font-family: var(--font-sans);
@@ -42,7 +40,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 8px;
+  gap: 6px;
 }
 
 #progress {
@@ -56,6 +54,23 @@ body {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
+#anomaly-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+}
+
+#anomaly-info span {
+  background: rgba(0, 0, 0, 0.6);
+  padding: 3px 10px;
+  border-radius: 12px;
+  white-space: nowrap;
+}
+
 #message {
   background: rgba(0, 0, 0, 0.8);
   color: #fff;
@@ -67,8 +82,38 @@ body {
   pointer-events: none;
 }
 
-#message.show {
-  opacity: 1;
+#message.show { opacity: 1; }
+
+/* ===== Fixed Link Button ===== */
+#fixed-link {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 900;
+  background: var(--primary);
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: background 0.2s, transform 0.2s;
+}
+
+#fixed-link:hover {
+  background: var(--primary-light);
+  transform: translateY(-2px);
+}
+
+#fixed-link.fixed-link-anomaly {
+  background: #ff0040;
+  animation: pulse-link 0.6s infinite;
+}
+
+@keyframes pulse-link {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
 }
 
 /* ===== Overlay ===== */
@@ -94,9 +139,11 @@ body {
   border-radius: 16px;
   padding: 48px;
   text-align: center;
-  max-width: 480px;
+  max-width: 520px;
   width: 90%;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
 #overlay-content h2 {
@@ -105,10 +152,17 @@ body {
   color: var(--primary);
 }
 
+#overlay-content h3 {
+  font-size: 16px;
+  margin: 16px 0 8px;
+  color: var(--text);
+  text-align: left;
+}
+
 #overlay-content p {
   font-size: 16px;
   color: var(--text-light);
-  margin-bottom: 24px;
+  margin-bottom: 16px;
   line-height: 1.6;
 }
 
@@ -121,18 +175,54 @@ body {
   font-size: 16px;
   cursor: pointer;
   transition: background 0.2s;
+  margin: 4px;
 }
 
-#overlay-content button:hover {
-  background: var(--primary-light);
-}
+#overlay-content button:hover { background: var(--primary-light); }
 
 #overlay-content button:focus-visible {
   outline: 3px solid var(--accent);
   outline-offset: 2px;
 }
 
-/* ===== Corridor (main scroll area) ===== */
+.encounter-stat {
+  font-size: 14px !important;
+  color: var(--accent) !important;
+  font-weight: 600;
+}
+
+.clear-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+/* ===== Anomaly List ===== */
+.anomaly-list-screen h2 { margin-bottom: 16px; }
+
+.anomaly-list {
+  list-style: none;
+  text-align: left;
+  margin-bottom: 12px;
+}
+
+.anomaly-list li {
+  padding: 6px 0;
+  font-size: 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.anomaly-list .check { font-weight: 700; width: 24px; text-align: center; }
+.anomaly-list .found { color: var(--text); }
+.anomaly-list .found .check { color: #22c55e; }
+.anomaly-list .not-found { color: #aaa; }
+
+/* ===== Corridor ===== */
 #corridor {
   width: 100%;
   max-width: 960px;
@@ -147,9 +237,7 @@ body {
   transition: all 0.3s;
 }
 
-.corp-section:nth-child(even) {
-  background: var(--bg);
-}
+.corp-section:nth-child(even) { background: var(--bg); }
 
 .section-inner {
   max-width: 720px;
@@ -180,7 +268,6 @@ body {
   margin-bottom: 16px;
 }
 
-/* Nav bar inside each loop */
 .corp-nav {
   display: flex;
   align-items: center;
@@ -209,7 +296,6 @@ body {
   opacity: 0.8;
 }
 
-/* Service cards */
 .service-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -249,7 +335,6 @@ body {
   line-height: 1.6;
 }
 
-/* Team members */
 .team-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -257,9 +342,7 @@ body {
   margin-top: 24px;
 }
 
-.team-member {
-  text-align: center;
-}
+.team-member { text-align: center; }
 
 .team-avatar {
   width: 80px;
@@ -286,7 +369,6 @@ body {
   color: var(--text-light);
 }
 
-/* Numbers / stats */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -315,7 +397,6 @@ body {
   margin-top: 4px;
 }
 
-/* CTA */
 .cta-box {
   background: var(--primary);
   color: var(--text-on-primary);
@@ -325,16 +406,8 @@ body {
   margin-top: 24px;
 }
 
-.cta-box h3 {
-  font-size: 24px;
-  margin-bottom: 12px;
-}
-
-.cta-box p {
-  opacity: 0.8;
-  margin-bottom: 20px;
-  font-size: 15px;
-}
+.cta-box h3 { font-size: 24px; margin-bottom: 12px; }
+.cta-box p { opacity: 0.8; margin-bottom: 20px; font-size: 15px; }
 
 .cta-button {
   display: inline-block;
@@ -349,11 +422,8 @@ body {
   transition: opacity 0.2s;
 }
 
-.cta-button:hover {
-  opacity: 0.9;
-}
+.cta-button:hover { opacity: 0.9; }
 
-/* Footer */
 .corp-footer {
   background: #1a1a2e;
   color: rgba(255, 255, 255, 0.6);
@@ -362,14 +432,15 @@ body {
   font-size: 13px;
 }
 
-/* ===== Anomaly Styles ===== */
+/* ========================================
+   Anomaly Styles
+   ======================================== */
 
-/* 1: テキストがグリッチ */
+/* --- Easy: グリッチ --- */
 .anomaly-glitch .section-title {
   animation: glitch 0.3s infinite;
   color: #ff0040;
 }
-
 @keyframes glitch {
   0% { transform: translate(0); }
   20% { transform: translate(-3px, 3px); }
@@ -379,27 +450,20 @@ body {
   100% { transform: translate(0); }
 }
 
-/* 2: セクション全体が反転 */
-.anomaly-invert {
-  filter: invert(1) hue-rotate(180deg);
-}
+/* --- Easy: 色反転 --- */
+.anomaly-invert { filter: invert(1) hue-rotate(180deg); }
 
-/* 3: テキストが逆さま */
-.anomaly-upsidedown .section-title {
-  transform: rotate(180deg);
-}
+/* --- Easy: 逆さま --- */
+.anomaly-upsidedown .section-title { transform: rotate(180deg); }
 
-/* 4: 赤い点滅ボーダー */
-.anomaly-blink {
-  animation: blink-border 0.5s infinite;
-}
-
+/* --- Easy: 赤い点滅 --- */
+.anomaly-blink { animation: blink-border 0.5s infinite; }
 @keyframes blink-border {
   0%, 100% { box-shadow: inset 0 0 0 4px transparent; }
   50% { box-shadow: inset 0 0 0 4px #ff0040; }
 }
 
-/* 5: テキストが文字化けフォント */
+/* --- Easy: Comic Sans --- */
 .anomaly-zalgo .section-text {
   font-family: "Comic Sans MS", cursive;
   letter-spacing: 5px;
@@ -407,29 +471,20 @@ body {
   color: #8b00ff;
 }
 
-/* 6: セクションがゆっくり傾く */
+/* --- Easy: 傾き --- */
 .anomaly-tilt {
   transform: rotate(-3deg) scale(1.02);
-  transform-origin: center center;
+  transform-origin: center;
 }
 
-/* 7: 背景が不気味な色 */
-.anomaly-creepy-bg {
-  background: #1a0a0a !important;
-  color: #cc0000;
-}
-
+/* --- Easy: 暗赤色背景 --- */
+.anomaly-creepy-bg { background: #1a0a0a !important; color: #cc0000; }
 .anomaly-creepy-bg .section-title,
 .anomaly-creepy-bg .section-label,
-.anomaly-creepy-bg .section-text {
-  color: #cc0000;
-}
+.anomaly-creepy-bg .section-text { color: #cc0000; }
 
-/* 8: 要素がぶるぶる震える */
-.anomaly-shake {
-  animation: shake 0.1s infinite;
-}
-
+/* --- Easy: 震え --- */
+.anomaly-shake { animation: shake 0.1s infinite; }
 @keyframes shake {
   0% { transform: translate(0, 0); }
   25% { transform: translate(2px, -2px); }
@@ -438,7 +493,7 @@ body {
   100% { transform: translate(-2px, -2px); }
 }
 
-/* 9: ナビが壊れてる */
+/* --- Easy: ナビ崩壊 --- */
 .anomaly-broken-nav .nav-links {
   transform: rotate(12deg);
   background: #ff0040;
@@ -446,13 +501,12 @@ body {
   border-radius: 4px;
 }
 
-/* 10: 数字がバグる */
+/* --- Easy: 数値バグ --- */
 .anomaly-corrupt-stats .stat-number {
   font-family: monospace;
   animation: corrupt 0.2s infinite;
   color: #ff0040;
 }
-
 @keyframes corrupt {
   0% { opacity: 1; transform: skewX(0deg); }
   30% { opacity: 0.7; transform: skewX(10deg); }
@@ -460,29 +514,141 @@ body {
   100% { opacity: 0.8; transform: skewX(0deg); }
 }
 
-/* 11: チームメンバーの顔が不気味に */
+/* --- Easy: チーム「?」 --- */
 .anomaly-creepy-team .team-avatar {
   background: #ff0040;
   animation: pulse-creepy 1s infinite;
 }
-
 @keyframes pulse-creepy {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.2); }
 }
 
-/* 12: CTA ボタンが暴走 */
+/* --- Easy: CTAボタン暴走 --- */
 .anomaly-wild-cta .cta-button {
   animation: wild 0.3s infinite;
   background: #ff0040;
 }
-
 @keyframes wild {
   0% { transform: translate(0, 0) rotate(0deg); }
   25% { transform: translate(10px, -5px) rotate(5deg); }
   50% { transform: translate(-10px, 5px) rotate(-5deg); }
   75% { transform: translate(5px, 10px) rotate(3deg); }
   100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+/* --- Easy: 左右反転 --- */
+.anomaly-mirror { transform: scaleX(-1); }
+
+/* --- Easy: 巨大タイトル --- */
+.anomaly-giant .section-title {
+  font-size: 80px;
+  line-height: 1.1;
+}
+
+/* --- Easy: 血飛沫 --- */
+.blood-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 800;
+  pointer-events: none;
+}
+
+.blood-splat {
+  position: absolute;
+  background: radial-gradient(ellipse at 30% 30%, #8b0000 0%, #cc0000 40%, transparent 70%);
+  border-radius: 40% 60% 50% 50%;
+  opacity: 0.7;
+  filter: blur(2px);
+}
+
+/* --- Easy: 停電 --- */
+.power-outage-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 800;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1.5s ease-in;
+}
+
+.power-outage-overlay.active {
+  opacity: 0.85;
+}
+
+/* --- Easy: 偽クリアダイアログ --- */
+.fake-clear-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1500;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.fake-clear-overlay.active {
+  opacity: 1;
+  pointer-events: none;
+}
+
+.fake-clear-dialog {
+  background: #fff;
+  border-radius: 16px;
+  padding: 48px;
+  text-align: center;
+  max-width: 480px;
+  width: 90%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  pointer-events: auto;
+}
+
+.fake-clear-dialog h2 {
+  font-size: 28px;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+
+.fake-clear-dialog p {
+  font-size: 16px;
+  color: var(--text-light);
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+
+.fake-clear-dialog button {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  padding: 12px 32px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* --- Easy: 画面ノイズ --- */
+.anomaly-static::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 800;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 256px 256px;
+  opacity: 0.15;
+  animation: static-move 0.1s infinite;
+}
+
+@keyframes static-move {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-5px, 5px); }
+  50% { transform: translate(5px, -5px); }
+  75% { transform: translate(-3px, -3px); }
+  100% { transform: translate(3px, 3px); }
 }
 
 /* ===== Transition Flash ===== */
@@ -496,9 +662,7 @@ body {
   transition: opacity 0.15s;
 }
 
-.flash-overlay.active {
-  opacity: 1;
-}
+.flash-overlay.active { opacity: 1; }
 
 /* ===== Start Screen ===== */
 .start-screen h2 {
@@ -533,28 +697,23 @@ body {
   margin-bottom: 16px;
 }
 
-/* ===== Game Over Screen ===== */
-.gameover-screen h2 {
-  font-size: 36px;
-  color: #ff0040;
-}
-
 /* ===== Responsive ===== */
 @media (max-width: 768px) {
   .service-grid,
-  .team-grid {
-    grid-template-columns: 1fr;
-  }
+  .team-grid { grid-template-columns: 1fr; }
 
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
 
-  .corp-section {
-    padding: 48px 20px;
-  }
+  .corp-section { padding: 48px 20px; }
 
-  .section-title {
-    font-size: 24px;
+  .section-title { font-size: 24px; }
+
+  .anomaly-giant .section-title { font-size: 48px; }
+
+  #fixed-link {
+    bottom: 16px;
+    right: 16px;
+    padding: 10px 16px;
+    font-size: 12px;
   }
 }
